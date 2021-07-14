@@ -1,0 +1,34 @@
+<html>
+<body>
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+
+<ul id='listMessage'>
+  <li v-for='message in messages'>
+    {{ message }}
+  </li>
+</ul>
+
+<script>
+  const data = {
+    messages: [],
+  };
+
+  new Vue({
+    el: '#listMessage',
+    data,
+    mounted() {
+      const client = mqtt.connect('ws://localhost:8888', {
+        clientId: 'http.subscriber'
+      });
+      client.subscribe('topic0');
+      client.on('message', (topic, payload) => {
+        const message = String.fromCharCode.apply(null, payload);
+        console.log(message);
+        data.messages.push(message);
+      });
+    }
+  });
+</script>
+</body>
+</html>
